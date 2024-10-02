@@ -76,3 +76,11 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@font-face {
+  font-family: 'valorant';
+  src: url('/fonts/mi-fuente.woff') format('woff'),
+       url('/fonts/mi-fuente.ttf') format('truetype');
+  font-weight: normal; /* Ajusta según sea necesario */
+  font-style: normal; /* Ajusta según sea necesario */
+}
