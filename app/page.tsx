@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";  // Cambiamos a 'next/navigation'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import { WithPageAuthRequired } from "@auth0/nextjs-auth0";
 
 export default function Home() {
   const { user, error, isLoading } = useUser();
@@ -123,4 +124,7 @@ export default function Home() {
     </section>
     </main>
   );
+  
 }
+
+

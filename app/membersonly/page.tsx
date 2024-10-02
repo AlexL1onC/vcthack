@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { CalendarIcon, LayoutDashboard, Users, Swords, Map, Settings } from "lucide-react"
+import { CalendarIcon, LayoutDashboard, Users, Swords, Map, Settings, LogOut } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -44,17 +44,17 @@ const recentMatches = [
   { map: "Split", result: "Win", score: "13-9", kda: "17/11/5" },
 ]
 
-export default function ValorantCoachDashboard() {
+const ValorantCoachDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard")
 
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
+      <div className="w-64 bg-white shadow-md flex flex-col">
         <div className="p-4">
           <h2 className="text-2xl font-bold text-primary">Valorant Coach</h2>
         </div>
-        <nav className="mt-4">
+        <nav className="mt-4 flex-grow">
           <Button
             variant={activeTab === "dashboard" ? "secondary" : "ghost"}
             className="w-full justify-start"
@@ -96,6 +96,14 @@ export default function ValorantCoachDashboard() {
             Settings
           </Button>
         </nav>
+
+        {/* Log Out Button */}
+        <div className="p-4">
+          <Button variant="ghost" className="w-full justify-start" onClick={() => window.location.href = '/api/auth/logout'}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Log Out
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -216,3 +224,5 @@ export default function ValorantCoachDashboard() {
     </div>
   )
 }
+
+export default ValorantCoachDashboard
