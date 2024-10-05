@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import { useRouter } from 'next/navigation'
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { CalendarIcon, LayoutDashboard, Users, Swords, Map, Settings, LogOut } from "lucide-react"
 
@@ -46,6 +47,15 @@ const recentMatches = [
 
 const ValorantCoachDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard")
+  const router = useRouter()
+
+  const handleTabChange = (tab: string) => {
+    if (tab === "dashboard") {
+      setActiveTab(tab)
+    } else {
+      router.push(`/${tab}`)
+    }
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -56,41 +66,41 @@ const ValorantCoachDashboard = () => {
         </div>
         <nav className="mt-4 flex-grow">
           <Button
-            variant={activeTab === "dashboard" ? "secondary" : "ghost"}
+            variant="secondary"
             className="w-full justify-start"
-            onClick={() => setActiveTab("dashboard")}
+            onClick={() => handleTabChange("dashboard")}
           >
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Dashboard
           </Button>
           <Button
-            variant={activeTab === "players" ? "secondary" : "ghost"}
+            variant="ghost"
             className="w-full justify-start"
-            onClick={() => setActiveTab("players")}
+            onClick={() => handleTabChange("players")}
           >
             <Users className="mr-2 h-4 w-4" />
             Players
           </Button>
           <Button
-            variant={activeTab === "matches" ? "secondary" : "ghost"}
+            variant="ghost"
             className="w-full justify-start"
-            onClick={() => setActiveTab("matches")}
+            onClick={() => handleTabChange("matches")}
           >
             <Swords className="mr-2 h-4 w-4" />
             Matches
           </Button>
           <Button
-            variant={activeTab === "strategies" ? "secondary" : "ghost"}
+            variant="ghost"
             className="w-full justify-start"
-            onClick={() => setActiveTab("strategies")}
+            onClick={() => handleTabChange("strategies")}
           >
             <Map className="mr-2 h-4 w-4" />
             Strategies
           </Button>
           <Button
-            variant={activeTab === "settings" ? "secondary" : "ghost"}
+            variant="ghost"
             className="w-full justify-start"
-            onClick={() => setActiveTab("settings")}
+            onClick={() => handleTabChange("settings")}
           >
             <Settings className="mr-2 h-4 w-4" />
             Settings
