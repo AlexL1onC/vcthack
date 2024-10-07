@@ -15,24 +15,24 @@ import { cn } from "@/lib/utils";
 import ThemeToggleButton from "@/components/toggle-dark-mode"; // Import the client component
 import { Button } from './ui/button';
 
-const ListItem = ({ className, title, href, children }) => (
-  <li>
-    <NavigationMenuLink asChild>
-      <Link
-        href={href}
-        className={cn(
-          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-          className
-        )}
-      >
-        <div className="text-sm font-medium leading-none">{title}</div>
-        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-          {children}
-        </p>
-      </Link>
-    </NavigationMenuLink>
-  </li>
-);
+const ListItem = ({ className, title, href, children }: { className?: string; title: string; href: string; children: React.ReactNode }) => (
+    <li>
+      <NavigationMenuLink asChild>
+        <Link
+          href={href}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  )
 
 export default async function NavBar() {
   const session = await getSession();
