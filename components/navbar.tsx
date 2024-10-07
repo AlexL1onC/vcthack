@@ -1,9 +1,8 @@
-import { getSession } from '@auth0/nextjs-auth0'
-import Link from 'next/link'
-import { SignupButton } from "@/components/signup-button"
-import { LoginButton } from "@/components/login-button"
-import { LogoutButton } from "@/components/logout-button"
-import { Button } from "@/components/ui/button"
+import { getSession } from '@auth0/nextjs-auth0';
+import Link from 'next/link';
+import { SignupButton } from "@/components/signup-button";
+import { LoginButton } from "@/components/login-button";
+import { LogoutButton } from "@/components/logout-button";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,31 +10,33 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
+import ThemeToggleButton from "@/components/toggle-dark-mode"; // Import the client component
+import { Button } from './ui/button';
 
 const ListItem = ({ className, title, href, children }: { className?: string; title: string; href: string; children: React.ReactNode }) => (
-  <li>
-    <NavigationMenuLink asChild>
-      <Link
-        href={href}
-        className={cn(
-          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-          className
-        )}
-      >
-        <div className="text-sm font-medium leading-none">{title}</div>
-        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-          {children}
-        </p>
-      </Link>
-    </NavigationMenuLink>
-  </li>
-)
+    <li>
+      <NavigationMenuLink asChild>
+        <Link
+          href={href}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  )
 
 export default async function NavBar() {
-  const session = await getSession()
-  const user = session?.user
+  const session = await getSession();
+  const user = session?.user;
 
   return (
     <div className="w-full bg-background">
@@ -43,7 +44,6 @@ export default async function NavBar() {
         <NavigationMenu>
           <NavigationMenuList>
             {user ? (
-              // Menu for logged-in users
               <>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
@@ -59,7 +59,7 @@ export default async function NavBar() {
                               VI Chat
                             </div>
                             <p className="text-sm leading-tight text-muted-foreground">
-                              Ask questions and get answers from our VALORANT Inteligence, powered by Killjoy's LLM.
+                              Ask questions and get answers from our VALORANT Intelligence, powered by Killjoy's LLM.
                             </p>
                           </Link>
                         </NavigationMenuLink>
@@ -78,7 +78,7 @@ export default async function NavBar() {
                             </p>
                           </Link>
                         </NavigationMenuLink>
-                        </li>
+                      </li>
                       <ListItem href="/middleware" title="Games and scrims">
                         View your games and scrims data.
                       </ListItem>
@@ -97,7 +97,6 @@ export default async function NavBar() {
                 </NavigationMenuItem>
               </>
             ) : (
-              // Menu for non-logged-in users
               <>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger>About</NavigationMenuTrigger>
@@ -167,16 +166,19 @@ export default async function NavBar() {
             )}
           </NavigationMenuList>
         </NavigationMenu>
-        <div className="flex gap-4">
-          {!user && (
+        <div className="flex items-center gap-4">
+        <ThemeToggleButton />
+        <div className="flex gap-2">
+            {!user && (
             <>
-              <SignupButton />
-              <LoginButton />
+                <SignupButton />
+                <LoginButton />
             </>
-          )}
-          {user && <LogoutButton />}
+            )}
+            {user && <LogoutButton />}
         </div>
-      </div>
+        </div>
     </div>
-  )
+    </div>
+  );
 }
