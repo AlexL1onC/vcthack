@@ -79,7 +79,7 @@ export default async function NavBar() {
                           </Link>
                         </NavigationMenuLink>
                       </li>
-                      <ListItem href="/middleware" title="Games and scrims">
+                      <ListItem href="/cypher" title="Games and scrims">
                         View your games and scrims data.
                       </ListItem>
                       <ListItem href="/auth-protected" title="Settings">
