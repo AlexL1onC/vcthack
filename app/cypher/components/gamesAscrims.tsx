@@ -1,9 +1,35 @@
-import { getSession } from "@auth0/nextjs-auth0"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { fetchMatchesResults } from "../route"
-import { MatchFinder } from "./matches"
-import { BlankCard } from "./scrims"
-import { fetchMatchesUpcoming } from "../route"
+import Image from "next/image"
+import BlankCard from "./matches"
+import MatchFinder from "./scrims"
+
+export default function Page() {
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-4 space-y-8">
+        {/* Imagen en la parte superior */}
+        <div className="w-full h-48 relative">
+          <Image
+            src="/placeholder.svg?height=200&width=1200"
+            alt="Banner"
+            layout="fill"
+            objectFit="cover"
+            className="rounded-lg"
+          />
+        </div>
+
+        {/* Contenedor para los componentes lado a lado */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Card en blanco */}
+          <div>
+            <BlankCard />
+          </div>
+
+          {/* Componente de búsqueda de partidas */}
+          <div>
+            <MatchFinder />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

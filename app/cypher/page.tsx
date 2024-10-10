@@ -1,35 +1,26 @@
-import Image from "next/image"
-import BlankCard from "./components/matches"
-import MatchFinder from "./components/scrims"
+import React from 'react';
+import { getSession } from '@auth0/nextjs-auth0';
+import Page from './components/gamesAscrims';
+import { redirect } from 'next/navigation';
 
-export default function Page() {
+const Dashboard = async () => {
+
+  const session = await getSession();
+  const user = session?.user;
+
+  if (!user) {
+    redirect('/api/auth/login');
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-4 space-y-8">
-        {/* Imagen en la parte superior */}
-        <div className="w-full h-48 relative">
-          <Image
-            src="/placeholder.svg?height=200&width=1200"
-            alt="Banner"
-            layout="fill"
-            objectFit="cover"
-            className="rounded-lg"
-          />
-        </div>
-
-        {/* Contenedor para los componentes lado a lado */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Card en blanco */}
-          <div>
-            <BlankCard />
-          </div>
-
-          {/* Componente de búsqueda de partidas */}
-          <div>
-            <MatchFinder />
-          </div>
+    <div className="container mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-4">
+        <div className="lg:col-span-5">
+          <Page />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default Dashboard;

@@ -41,9 +41,9 @@ interface TeamsMatchesResults {
   }
 
 // Fetch Temas Matches Results
-export async function fetchMatchesResults(results: string): Promise<TeamsMatchesResults[]> {
+export async function fetchMatchesResults(): Promise<TeamsMatchesResults[]> {
     try {
-      const response = await fetch(`https://vlrggapi.vercel.app/match?q=${results}`, {
+      const response = await fetch(`https://vlrggapi.vercel.app/match?q=results`, {
         method: 'GET',
         headers: {
           'accept': 'application/json'
@@ -61,9 +61,9 @@ export async function fetchMatchesResults(results: string): Promise<TeamsMatches
   }
 
   // Fetch Temas Matches Upcoming
-export async function fetchMatchesUpcoming(results: string): Promise<TeamsMatchesUpcoming[]> {
+export async function fetchMatchesUpcoming(): Promise<TeamsMatchesUpcoming[]> {
     try {
-      const response = await fetch(`https://vlrggapi.vercel.app/match?q=${results}`, {
+      const response = await fetch(`https://vlrggapi.vercel.app/match?q=upcoming`, {
         method: 'GET',
         headers: {
           'accept': 'application/json'

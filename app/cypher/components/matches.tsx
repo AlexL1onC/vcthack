@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -11,18 +14,91 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Filter } from "lucide-react"
+import { fetchMatchesResults, fetchMatchesUpcoming } from "../route"
 
-// Simulación de datos del servidor
-const teams = ["Team A", "Team B", "Team C", "Team D"]
-const tournaments = ["Tournament 1", "Tournament 2", "Tournament 3"]
-const matches = [
-  { id: 1, team1: "Team A", team2: "Team B", tournament: "Tournament 1", status: "Upcoming" },
-  { id: 2, team1: "Team C", team2: "Team D", tournament: "Tournament 2", status: "Finished" },
-  { id: 3, team1: "Team A", team2: "Team C", tournament: "Tournament 3", status: "Upcoming" },
-  { id: 4, team1: "Team B", team2: "Team D", tournament: "Tournament 1", status: "Finished" },
-]
+type MatchType = "upcoming" | "results" | "all"
+
+interface TeamsMatchesResults {
+  team1: string
+  team2: string
+  score1: string
+  score2: string
+  flag1: string
+  flag2: string
+  time_completed: string
+  round_info: string
+  tournament_name: string
+  match_page: string
+  tournamnet_icon: string
+}
+
+interface TeamsMatchesUpcoming {
+  team1: string
+  team2: string
+  flag1: string
+  flag2: string
+  time_until_match: string
+  match_series: string
+  match_event: string
+  unix_timestamp: string
+  match_page: string
+}
 
 export default function MatchFinder() {
+  const [matches, setMatches] = useState<Array<TeamsMatchesResults | TeamsMatchesUpcoming>>([])
+  const [matchType, setMatchType] = useState<MatchType>("all")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedTeam, setSelectedTeam] = useState("")
+  const [selectedTournament, setSelectedTournament] = useState("")
+  const [teams, setTeams] = useState<string[]>([])
+  const [tournaments, setTournaments] = useState<string[]>([])
+
+  useEffect(() => {
+    fetchMatches()
+  }, [matchType])
+
+  useEffect(() => {
+    // Extract unique teams and tournaments from matches
+    const uniqueTeams = new Set<string>()
+    const uniqueTournaments = new Set<string>()
+
+    matches.forEach(match => {
+      uniqueTeams.add(match.team1)
+      uniqueTeams.add(match.team2)
+      if ('tournament_name' in match) {
+        uniqueTournaments.add(match.tournament_name)
+      } else if ('match_event' in match) {
+        uniqueTournaments.add(match.match_event)
+      }
+    })
+
+    setTeams(Array.from(uniqueTeams))
+    setTournaments(Array.from(uniqueTournaments))
+  }, [matches])
+
+  const fetchMatches = async () => {
+    let fetchedMatches: Array<TeamsMatchesResults | TeamsMatchesUpcoming> = []
+    if (matchType === "upcoming" || matchType === "all") {
+      const upcomingMatches = await fetchMatchesUpcoming()
+      fetchedMatches = [...fetchedMatches, ...upcomingMatches]
+    }
+    if (matchType === "results" || matchType === "all") {
+      const resultMatches = await fetchMatchesResults()
+      fetchedMatches = [...fetchedMatches, ...resultMatches]
+    }
+    setMatches(fetchedMatches)
+  }
+
+  const filteredMatches = matches.filter((match) => {
+    const matchTeams = `${match.team1} ${match.team2}`
+    const matchTournament = 'tournament_name' in match ? match.tournament_name : match.match_event
+    return (
+      matchTeams.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (!selectedTeam || match.team1 === selectedTeam || match.team2 === selectedTeam) &&
+      (!selectedTournament || matchTournament === selectedTournament)
+    )
+  })
+
   return (
     <div className="space-y-4">
       <div className="flex space-x-2">
@@ -30,7 +106,8 @@ export default function MatchFinder() {
           type="search"
           placeholder="Buscar partidas..."
           className="w-full"
-          name="searchQuery"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
         <Sheet>
           <SheetTrigger asChild>
@@ -43,12 +120,13 @@ export default function MatchFinder() {
               <SheetTitle>Filtros</SheetTitle>
               <SheetDescription>Ajusta los filtros para encontrar las partidas que buscas.</SheetDescription>
             </SheetHeader>
-            <form className="grid gap-4 py-4">
-              <Select name="team1">
+            <div className="grid gap-4 py-4">
+              <Select onValueChange={setSelectedTeam} value={selectedTeam}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar equipo 1" />
+                  <SelectValue placeholder="Seleccionar equipo" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="">Todos los equipos</SelectItem>
                   {teams.map((team) => (
                     <SelectItem key={team} value={team}>
                       {team}
@@ -56,23 +134,12 @@ export default function MatchFinder() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select name="team2">
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccionar equipo 2" />
-                </SelectTrigger>
-                <SelectContent>
-                  {teams.map((team) => (
-                    <SelectItem key={team} value={team}>
-                      {team}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select name="tournament">
+              <Select onValueChange={setSelectedTournament} value={selectedTournament}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Seleccionar torneo" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="">Todos los torneos</SelectItem>
                   {tournaments.map((tournament) => (
                     <SelectItem key={tournament} value={tournament}>
                       {tournament}
@@ -80,29 +147,58 @@ export default function MatchFinder() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select name="matchStatus">
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Estado de la partida" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="finished">Terminados</SelectItem>
-                  <SelectItem value="upcoming">Próximos</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button type="submit">Aplicar filtros</Button>
-            </form>
+            </div>
           </SheetContent>
         </Sheet>
       </div>
+      <div className="flex space-x-2">
+        <Button
+          variant={matchType === "upcoming" ? "default" : "outline"}
+          onClick={() => setMatchType("upcoming")}
+        >
+          Partidos por venir
+        </Button>
+        <Button
+          variant={matchType === "results" ? "default" : "outline"}
+          onClick={() => setMatchType("results")}
+        >
+          Partidos terminados
+        </Button>
+        <Button
+          variant={matchType === "all" ? "default" : "outline"}
+          onClick={() => setMatchType("all")}
+        >
+          Todos los partidos
+        </Button>
+      </div>
       <div className="space-y-2">
-        {matches.map((match) => (
-          <Card key={match.id}>
+        {filteredMatches.map((match, index) => (
+          <Card key={index}>
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold">
-                {match.team1} vs {match.team2}
-              </h3>
-              <p className="text-sm text-muted-foreground">{match.tournament}</p>
-              <p className="text-sm text-muted-foreground">{match.status}</p>
+              <div className="flex items-center space-x-2">
+                <img src={match.flag1} alt={`${match.team1} flag`} className="w-6 h-4" />
+                <h3 className="text-lg font-semibold">{match.team1}</h3>
+                <span>vs</span>
+                <h3 className="text-lg font-semibold">{match.team2}</h3>
+                <img src={match.flag2} alt={`${match.team2} flag`} className="w-6 h-4" />
+              </div>
+              {'tournament_name' in match ? (
+                <>
+                  <p className="text-sm text-muted-foreground">{match.tournament_name}</p>
+                  <p className="text-sm text-muted-foreground">Finalizado: {match.time_completed}</p>
+                  <p className="text-sm font-semibold">Resultado: {match.score1} - {match.score2}</p>
+                  <p className="text-sm text-muted-foreground">{match.round_info}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground">{match.match_event}</p>
+                  <p className="text-sm text-muted-foreground">Comienza en: {match.time_until_match}</p>
+                  <p className="text-sm text-muted-foreground">{match.match_series}</p>
+                </>
+              )}
+              <a href={match.match_page} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 hover:underline">
+                Ver detalles
+              </a>
             </CardContent>
           </Card>
         ))}
